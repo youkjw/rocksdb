@@ -4812,6 +4812,11 @@ rocksdb_iterator_t* rocksdb_sstfilereader_iterator(rocksdb_sstfilereader_t* read
   return result;
 }
 
+void rocksdb_sstfilereader_destroy(rocksdb_sstfilereader_t* reader) {
+  delete reader->rep;
+  delete reader;
+}
+
 rocksdb_sstfilewriter_t* rocksdb_sstfilewriter_create(
     const rocksdb_envoptions_t* env, const rocksdb_options_t* io_options) {
   rocksdb_sstfilewriter_t* writer = new rocksdb_sstfilewriter_t;
