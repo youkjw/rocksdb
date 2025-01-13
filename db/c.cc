@@ -4812,6 +4812,10 @@ rocksdb_iterator_t* rocksdb_sstfilereader_iterator(rocksdb_sstfilereader_t* read
   return result;
 }
 
+void rocksdb_sstfilereader_verifychecksum(rocksdb_sstfilereader_t* reader, const rocksdb_readoptions_t* read_options, char** errptr) {
+  SaveError(errptr, reader->rep->VerifyChecksum(read_options->rep));
+}
+
 void rocksdb_sstfilereader_destroy(rocksdb_sstfilereader_t* reader) {
   delete reader->rep;
   delete reader;
