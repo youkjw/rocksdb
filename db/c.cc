@@ -48,6 +48,7 @@
 #include "rocksdb/utilities/write_batch_with_index.h"
 #include "rocksdb/write_batch.h"
 #include "utilities/merge_operators.h"
+#include "rocksdb/sst_file_reader.h"
 
 using ROCKSDB_NAMESPACE::BackupEngine;
 using ROCKSDB_NAMESPACE::BackupEngineOptions;
@@ -111,6 +112,7 @@ using ROCKSDB_NAMESPACE::SliceParts;
 using ROCKSDB_NAMESPACE::SliceTransform;
 using ROCKSDB_NAMESPACE::Snapshot;
 using ROCKSDB_NAMESPACE::SstFileMetaData;
+using ROCKSDB_NAMESPACE::SstFileReader;
 using ROCKSDB_NAMESPACE::SstFileWriter;
 using ROCKSDB_NAMESPACE::Status;
 using ROCKSDB_NAMESPACE::TablePropertiesCollectorFactory;
@@ -234,6 +236,9 @@ struct rocksdb_envoptions_t {
 };
 struct rocksdb_ingestexternalfileoptions_t {
   IngestExternalFileOptions rep;
+};
+struct rocksdb_sstfilereader_t {
+  SstFileReader* rep;
 };
 struct rocksdb_sstfilewriter_t {
   SstFileWriter* rep;
@@ -4789,6 +4794,23 @@ rocksdb_envoptions_t* rocksdb_envoptions_create() {
 }
 
 void rocksdb_envoptions_destroy(rocksdb_envoptions_t* opt) { delete opt; }
+
+rocksdb_sstfilereader_t* rocksdb_sstfilereader_create(const rocksdb_options_t* io_options) {
+  rocksdb_sstfilereader_t* reader = new rocksdb_sstfilereader_t;
+  reader->rep = new SstFileReader(io_options->rep);
+  return reader;
+}
+
+void rocksdb_sstfilereader_open(rocksdb_sstfilereader_t* reader,
+                                const char* name, char** errptr) {
+  SaveError(errptr, reader->rep->Open(std::string(name)));
+}
+
+rocksdb_iterator_t* rocksdb_sstfilereader_iterator(rocksdb_sstfilereader_t* reader, const rocksdb_readoptions_t* read_options) {
+  rocksdb_iterator_t* result = new rocksdb_iterator_t;
+  result->rep = reader->rep->NewIterator(read_options->rep);
+  return result;
+}
 
 rocksdb_sstfilewriter_t* rocksdb_sstfilewriter_create(
     const rocksdb_envoptions_t* env, const rocksdb_options_t* io_options) {

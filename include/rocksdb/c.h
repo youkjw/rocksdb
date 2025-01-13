@@ -118,6 +118,7 @@ typedef struct rocksdb_sst_file_metadata_t rocksdb_sst_file_metadata_t;
 typedef struct rocksdb_envoptions_t rocksdb_envoptions_t;
 typedef struct rocksdb_ingestexternalfileoptions_t
     rocksdb_ingestexternalfileoptions_t;
+typedef struct rocksdb_sstfilereader_t rocksdb_sstfilereader_t;
 typedef struct rocksdb_sstfilewriter_t rocksdb_sstfilewriter_t;
 typedef struct rocksdb_ratelimiter_t rocksdb_ratelimiter_t;
 typedef struct rocksdb_perfcontext_t rocksdb_perfcontext_t;
@@ -2063,6 +2064,13 @@ extern ROCKSDB_LIBRARY_API void rocksdb_create_dir_if_missing(
     rocksdb_env_t* env, const char* path, char** errptr);
 
 /* SstFile */
+
+extern ROCKSDB_LIBRARY_API rocksdb_sstfilereader_t*
+rocksdb_sstfilereader_create(const rocksdb_options_t* io_options);
+extern ROCKSDB_LIBRARY_API void rocksdb_sstfilereader_open(
+    rocksdb_sstfilereader_t* reader, const char* path, char** errptr);
+extern ROCKSDB_LIBRARY_API rocksdb_iterator_t* rocksdb_sstfilereader_iterator(
+    rocksdb_sstfilereader_t* reader, const rocksdb_readoptions_t* read_options);
 
 extern ROCKSDB_LIBRARY_API rocksdb_sstfilewriter_t*
 rocksdb_sstfilewriter_create(const rocksdb_envoptions_t* env,
