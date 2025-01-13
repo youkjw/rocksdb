@@ -2071,6 +2071,8 @@ extern ROCKSDB_LIBRARY_API void rocksdb_sstfilereader_open(
     rocksdb_sstfilereader_t* reader, const char* path, char** errptr);
 extern ROCKSDB_LIBRARY_API rocksdb_iterator_t* rocksdb_sstfilereader_iterator(
     rocksdb_sstfilereader_t* reader, const rocksdb_readoptions_t* read_options);
+extern ROCKSDB_LIBRARY_API void rocksdb_sstfilereader_verifychecksum(
+    rocksdb_sstfilereader_t* reader, const rocksdb_readoptions_t* read_options, char** errptr);
 extern ROCKSDB_LIBRARY_API void rocksdb_sstfilereader_destroy(
     rocksdb_sstfilereader_t* reader);
 
