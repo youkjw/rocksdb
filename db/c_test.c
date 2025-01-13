@@ -917,6 +917,41 @@ int main(int argc, char** argv) {
     CheckNoError(err);
   }
 
+  StartPhase("readfile");
+  {
+    rocksdb_options_t* io_options = rocksdb_options_create();
+    rocksdb_readoptions_t* read_options = rocksdb_readoptions_create();
+    rocksdb_sstfilereader_t* reader =
+        rocksdb_sstfilereader_create(io_options);
+
+    rocksdb_sstfilereader_open(reader, "/tmp/kvrocks/db/000014.sst", &err);
+    CheckNoError(err);
+    rocksdb_iterator_t* iter = rocksdb_sstfilereader_iterator(reader, read_options);
+    rocksdb_iter_seek_to_first(iter);
+
+    fprintf(stderr, "readfile start\n");
+
+    int i;
+    for (i = 0; rocksdb_iter_valid(iter) != 0; rocksdb_iter_next(iter)) {
+      size_t len;
+      const char* key;
+      key = rocksdb_iter_key(iter, &len);
+
+      const char* value;
+      value = rocksdb_iter_value(iter, &len);
+
+      fprintf(stderr, "readfile key:%s, value: %s \n", key, value);
+      i++;
+    }
+
+    fprintf(stderr, "readfile end\n");
+
+    //CheckCondition(i == 4);
+    rocksdb_iter_get_error(iter, &err);
+    CheckNoError(err);
+    rocksdb_iter_destroy(iter);
+  }
+
   StartPhase("writebatch");
   {
     rocksdb_writebatch_t* wb = rocksdb_writebatch_create();
